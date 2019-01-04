@@ -145,6 +145,7 @@ For documentation on the latest development code see the [documentation index][d
 * [ceph](./plugins/inputs/ceph)
 * [cgroup](./plugins/inputs/cgroup)
 * [chrony](./plugins/inputs/chrony)
+* [cloud_pubsub](./plugins/inputs/cloud_pubsub) Google Cloud Pub/Sub
 * [conntrack](./plugins/inputs/conntrack)
 * [consul](./plugins/inputs/consul)
 * [couchbase](./plugins/inputs/couchbase)
@@ -176,7 +177,6 @@ For documentation on the latest development code see the [documentation index][d
 * [http_response](./plugins/inputs/http_response)
 * [icinga2](./plugins/inputs/icinga2)
 * [influxdb](./plugins/inputs/influxdb)
-* [influxdb_v2](./plugins/inputs/influxdb_v2)
 * [influxdb_listener](./plugins/inputs/influxdb_listener)
 * [internal](./plugins/inputs/internal)
 * [interrupts](./plugins/inputs/interrupts)
@@ -323,7 +323,8 @@ For documentation on the latest development code see the [documentation index][d
 
 ## Output Plugins
 
-* [influxdb](./plugins/outputs/influxdb)
+* [influxdb](./plugins/outputs/influxdb) (InfluxDB 1.x)
+* [influxdb_v2](./plugins/outputs/influxdb_v2) ([InfluxDB 2.x](https://github.com/influxdata/platform))
 * [amon](./plugins/outputs/amon)
 * [amqp](./plugins/outputs/amqp) (rabbitmq)
 * [application_insights](./plugins/outputs/application_insights)
