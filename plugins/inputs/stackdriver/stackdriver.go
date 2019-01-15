@@ -296,6 +296,7 @@ func (s *Stackdriver) updateWindow() {
 		s.windowStart = s.windowEnd
 	}
 	s.windowEnd = windowEnd
+	log.Printf("D! Window Start: %s\nWindow End: %s\n", s.windowStart, s.windowEnd)
 }
 
 // Internal structure which holds our configuration for a particular GCP time
@@ -370,7 +371,7 @@ func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 // defaults taken from the gcp_stackdriver plugin configuration.
 func (s *Stackdriver) newTimeSeriesConf(metricType string) *timeSeriesConf {
 	filter := s.newListTimeSeriesFilter(metricType)
-	log.Printf("D! Filter for metricType %s is: %s\n", metricType, filter)
+	log.Printf("D! Creating timeseriesconf with filter %s \n", filter)
 	interval := &monitoringpb.TimeInterval{
 		EndTime:   &googlepbts.Timestamp{Seconds: s.windowEnd.Unix()},
 		StartTime: &googlepbts.Timestamp{Seconds: s.windowStart.Unix()},
@@ -505,6 +506,7 @@ func (s *Stackdriver) generatetimeSeriesConfs() ([]*timeSeriesConf, error) {
 			EndTime:   &googlepbts.Timestamp{Seconds: s.windowEnd.Unix()},
 			StartTime: &googlepbts.Timestamp{Seconds: s.windowStart.Unix()},
 		}
+		log.Printf("D! Updating cached timeseriesconf to start %s and end %s", interval.StartTime, interval.EndTime)
 		for _, timeSeriesConf := range s.timeSeriesConfCache.TimeSeriesConfs {
 			timeSeriesConf.listTimeSeriesRequest.Interval = interval
 		}
@@ -560,6 +562,7 @@ func (s *Stackdriver) generatetimeSeriesConfs() ([]*timeSeriesConf, error) {
 		Generated:       time.Now(),
 		TTL:             time.Duration(s.CacheTTLSeconds) * time.Second,
 	}
+	log.Printf("D! Created cache at: %s\n with TTL %s\n", s.timeSeriesConfCache.Generated, s.timeSeriesConfCache.TTL)
 
 	return ret, nil
 }
@@ -572,12 +575,15 @@ func (s *Stackdriver) scrapeTimeSeries(acc telegraf.Accumulator,
 	tsReq := tsConf.listTimeSeriesRequest
 	measurement := tsConf.measurement
 	fieldPrefix := tsConf.fieldPrefix
+	log.Printf("D! Making request with filter %s from %s to %s", tsReq.Filter, tsReq.Interval.StartTime, tsReq.Interval.EndTime)
 	tsRespChan, err := s.client.ListTimeSeries(s.ctx, tsReq)
 	if err != nil {
+		log.Printf("D! Got an error response for %s", tsReq.Filter)
 		return err
 	}
 
 	for tsDesc := range tsRespChan {
+		log.Printf("D! Got a non error response for %s", tsReq.Filter)
 		tags := map[string]string{
 			"resource_type": tsDesc.Resource.Type,
 		}
@@ -620,6 +626,7 @@ func (s *Stackdriver) scrapeTimeSeries(acc telegraf.Accumulator,
 				}
 			}
 
+			log.Printf("D! Writing to telegraf %s %s %s %s", measurement, fields, tags, ts)
 			acc.AddFields(measurement, fields, tags, ts)
 		}
 	}
