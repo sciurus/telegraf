@@ -313,9 +313,10 @@ type timeSeriesConf struct {
 
 // Generate filter string for ListTimeSeriesRequest
 func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
+	filterString := fmt.Sprintf(`metric.type = "%s"`, metricType)
+
 	if s.Filter == nil {
-		log.Printf("D! Filter for metricType %s is nil\n", metricType)
-		return ""
+		return filterString
 	}
 
 	functions := []string{
@@ -324,7 +325,6 @@ func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 		"has_substring",
 		"one_of",
 	}
-	filterString := fmt.Sprintf(`metric.type = "%s"`, metricType)
 
 	var valueFmt string
 	if len(s.Filter.ResourceLabels) > 0 {
@@ -363,7 +363,6 @@ func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 		}
 	}
 
-	log.Printf("D! Filter for metricType %s is: %s\n", metricType, filterString)
 	return filterString
 }
 
@@ -371,6 +370,7 @@ func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 // defaults taken from the gcp_stackdriver plugin configuration.
 func (s *Stackdriver) newTimeSeriesConf(metricType string) *timeSeriesConf {
 	filter := s.newListTimeSeriesFilter(metricType)
+	log.Printf("D! Filter for metricType %s is: %s\n", metricType, filter)
 	interval := &monitoringpb.TimeInterval{
 		EndTime:   &googlepbts.Timestamp{Seconds: s.windowEnd.Unix()},
 		StartTime: &googlepbts.Timestamp{Seconds: s.windowStart.Unix()},
