@@ -314,6 +314,7 @@ type timeSeriesConf struct {
 // Generate filter string for ListTimeSeriesRequest
 func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 	if s.Filter == nil {
+		log.Printf("D! Filter for metricType %s is nil\n", metricType)
 		return ""
 	}
 
@@ -362,6 +363,7 @@ func (s *Stackdriver) newListTimeSeriesFilter(metricType string) string {
 		}
 	}
 
+	log.Printf("D! Filter for metricType %s is: %s\n", metricType, filterString)
 	return filterString
 }
 
