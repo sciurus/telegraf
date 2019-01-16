@@ -583,7 +583,7 @@ func (s *Stackdriver) scrapeTimeSeries(acc telegraf.Accumulator,
 	}
 
 	for tsDesc := range tsRespChan {
-		log.Printf("D! Got a non error response for %s", tsReq.Filter)
+		log.Printf("D! Got data for %s", tsReq.Filter)
 		tags := map[string]string{
 			"resource_type": tsDesc.Resource.Type,
 		}
@@ -630,6 +630,8 @@ func (s *Stackdriver) scrapeTimeSeries(acc telegraf.Accumulator,
 			acc.AddFields(measurement, fields, tags, ts)
 		}
 	}
+
+	log.Printf("D! Finished request for %s", tsReq.Filter)
 
 	return nil
 }
